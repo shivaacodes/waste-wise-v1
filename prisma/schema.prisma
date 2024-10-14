@@ -9,9 +9,9 @@ datasource db {
 
 model Report {
   id        String   @id @default(cuid())
-  userId    String // ID of the user who submitted the report
-  location  String // Location of the reported incident
-  details   String // Description of the incident
+  userId    String
+  location  String
+  details   String
   imageUrl  String? // Optional URL of an image showing the incident
   createdAt DateTime @default(now())
 
@@ -23,7 +23,7 @@ enum UserRole {
   RESIDENT
 }
 
-// Necessary for Next auth
+// for Next auth
 model Account {
   id                String  @id @default(cuid())
   userId            String

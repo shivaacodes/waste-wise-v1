@@ -10,7 +10,7 @@ async function getUserByEmail(email: string) {
       throw new Error("User not found");
     }
 
-    return user; // Return the user object if found
+    return user;
   } catch (error) {
     console.error("Error retrieving user by email:", error);
     throw new Error("Database query failed");

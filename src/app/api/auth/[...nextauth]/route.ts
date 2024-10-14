@@ -1,5 +1,5 @@
-import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { NextAuthOptions } from "next-auth";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 
@@ -14,7 +14,7 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials: any): Promise<any> {
+      async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
@@ -24,13 +24,21 @@ export const authOptions: NextAuthOptions = {
             where: { email: credentials.email },
           });
 
-          if (
-            !user ||
-            !bcrypt.compareSync(credentials.password, user.passwordHash)
-          ) {
+          if (!user || !user.password) {
             return null;
           }
 
+          // compare passwrd
+          const isPasswordValid = bcrypt.compareSync(
+            credentials.password,
+            user.password
+          );
+
+          if (!isPasswordValid) {
+            return null;
+          }
+
+          //if valid; return user objects
           return {
             id: user.id,
             email: user.email,
@@ -45,29 +53,3 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 };
-
-//   callbacks: {
-//     async jwt({ token, user }) {
-//       if (user) {
-//         token.id = user.id;
-//         token.role = user.role;
-//       }
-//       return token;
-//     },
-//     async session({ session, token }) {
-//       session.user = {
-//         ...session.user,
-//         id: token.id as string,
-//         role: token.role as string,
-//       };
-//       return session;
-//     },
-//     async redirect({ url, baseUrl }) {
-//       if (url.includes("/worker")) {
-//         return `${baseUrl}/worker-dashboard`;
-//       } else if (url.includes("/resident")) {
-//         return `${baseUrl}/resident-dashboard`;
-//       }
-//       return baseUrl;
-//     },
-//   },
